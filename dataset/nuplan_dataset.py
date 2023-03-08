@@ -41,6 +41,6 @@ if __name__ == '__main__':
     ]
     
     dirname = os.path.dirname(__file__)
-    data_root = os.path.join(dirname, 'converted_dataset0')
+    data_root = os.path.join(dirname, '../data/NuPlan/converted_dataset')
 
     dataset = NuPlanDataset(data_root, scenarios)
