@@ -5,9 +5,12 @@ from torch.utils.data import Dataset
 class NuPlanDataset(Dataset):
     def __init__(self,
         data_root: str,
-        scenario_list: list[str]
+        scenario_list: list[str],
+        transform: object = None
     ) -> None:
 
+        self.transform = transform
+        
         for idx in range(len(scenario_list)):
             observation_path = os.path.join(data_root, scenario_list[idx], 'observation_array.npy')
             look_ahead_pt_path = os.path.join(data_root, scenario_list[idx], 'look_ahead_pt_array.npy')
@@ -30,7 +33,10 @@ class NuPlanDataset(Dataset):
         return len(self.observation)
 
     def __getitem__(self, idx):
-        return self.observation[idx], self.look_ahead_pt[idx]
+        if self.transform:
+            return self.transform(self.observation[idx]), self.look_ahead_pt[idx]
+        else:
+            return self.observation[idx], self.look_ahead_pt[idx]
     
 if __name__ == '__main__':
 
