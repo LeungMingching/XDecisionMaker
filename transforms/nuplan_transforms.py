@@ -1,6 +1,5 @@
 import numpy as np
-from utils.coordinates_transformation import utm_to_bev
-from utils.math import rotate_vec_2d, calculate_distance
+from utils import utm_to_bev, rotate_vec_2d, calculate_distance
 
 class ToBEV(object):
 
