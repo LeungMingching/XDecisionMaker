@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import stats
 from utils import utm_to_bev, rotate_vec_2d, calculate_distance
 
 class ToBEV(object):
@@ -110,3 +111,12 @@ class FilterObjectsByRadius(object):
     def shuffle_objects(self, observation: np.ndarray) -> None:
         np.random.shuffle(observation[1:, :])
         pass
+
+# TODO:
+class NormalizeByAxis(object):
+
+    def __init__(self) -> None:
+        pass
+
+    def __call__(self, observation: np.ndarray) -> np.ndarray:
+        return observation
