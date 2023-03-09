@@ -19,6 +19,7 @@ class ToBEV(object):
             np.ndarray: Transformed observation
         """
 
+        assert len(observation) != 0, 'Empty input recived!'
         observation_raw = observation.copy()
         
         # for objects (x, y, heading) 
@@ -43,16 +44,16 @@ class FilterObjectsByRadius(object):
     def __init__(self,
         roi_radius: float,
         num_objects: int,
-        shuffle_objects: bool = True
+        is_shuffle_objects: bool = True
     ) -> None:
 
         self.roi_radius = roi_radius
         self.num_objects = num_objects
-        self.shuffle_objects = shuffle_objects
+        self.is_shuffle_objects = is_shuffle_objects
 
     def __call__(self, observation: np.ndarray) -> np.ndarray:
         """ Remove virtual objects and objects out of ROI
-            Reshape to (num_objects, features)
+            Reshape to (num_objects(including ego), features)
             Shuffle objects (Optional, true by default)
 
         Args:
@@ -61,6 +62,7 @@ class FilterObjectsByRadius(object):
         Returns:
             np.ndarray: Filtered observation
         """
+        assert len(observation) != 0, 'Empty input recived!'
 
         # filter virtual objects
         observation = self.filter_virtual_objects(observation)
@@ -72,7 +74,8 @@ class FilterObjectsByRadius(object):
         observation = self.resize_observation(observation)
 
         # shuffle
-        observation = self.shuffle_objects(observation)
+        if self.is_shuffle_objects:
+            self.shuffle_objects(observation)
         
         return observation
     
@@ -86,7 +89,7 @@ class FilterObjectsByRadius(object):
         observation_raw = observation.copy()
         ego_loc = observation_raw[0][0:2]
         distance_array = np.array(
-            [calculate_distance(obj_loc, ego_loc) for obj_loc in observation_raw[1:, 0:2]]
+            [calculate_distance(obj_loc, ego_loc) for obj_loc in observation_raw[:, 0:2]]
         )
         near_selections = distance_array <= self.roi_radius
         observation = observation_raw[near_selections, :]
@@ -94,12 +97,17 @@ class FilterObjectsByRadius(object):
     
     def resize_observation(self, observation: np.ndarray) -> np.ndarray:
         observation_raw = observation.copy()
-        # TODO:
+        num_real_objects = len(observation_raw)
+        num_padding = self.num_objects - num_real_objects
+
+        if num_padding <= 0:
+            observation = observation_raw[0:self.num_objects, :]
+        else:
+            observation_virtual = np.zeros((num_padding, observation_raw.shape[1]))
+            observation = np.concatenate((observation_raw, observation_virtual), axis=0)
 
         return observation
     
-    def shuffle_objects(self, observation: np.ndarray) -> np.ndarray:
-        observation_raw = observation.copy()
-        # TODO:
-
-        return observation
+    def shuffle_objects(self, observation: np.ndarray) -> None:
+        np.random.shuffle(observation[1:, :])
+        pass

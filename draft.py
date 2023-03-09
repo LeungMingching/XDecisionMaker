@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from transforms.nuplan_transforms import ToBEV
+from transforms.nuplan_transforms import ToBEV, FilterObjectsByRadius
 
 if __name__ == '__main__':
     
@@ -15,6 +15,9 @@ if __name__ == '__main__':
     print(f'look_ahead_pt shape: {look_ahead_pt_array.shape}')
 
     to_bev = ToBEV()
-    result = to_bev(observation_array[0])
+    filter_objects_by_radius = FilterObjectsByRadius(10, 10)
+    result1 = to_bev(observation_array[0])
+    result = filter_objects_by_radius(result1)
     print(result)
+    print(f'result shape: {result.shape}')
 
