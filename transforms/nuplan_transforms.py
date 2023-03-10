@@ -1,6 +1,17 @@
 import numpy as np
-from scipy import stats
+import torch
+import torch.nn.functional as F
+
 from utils import utm_to_bev, rotate_vec_2d, calculate_distance
+
+class ZeroTinyValue(object):
+
+    def __init__(self, zero_threshold = 1.0e-2) -> None:
+        self.zero_threshold = zero_threshold
+
+    def __call__(self, observation: np.ndarray) -> np.ndarray:
+        observation[observation < self.zero_threshold] = 0
+        return observation
 
 class ToBEV(object):
 
@@ -112,11 +123,28 @@ class FilterObjectsByRadius(object):
         np.random.shuffle(observation[1:, :])
         pass
 
-# TODO:
 class NormalizeByAxis(object):
+
+    def __init__(self, axis = 0) -> None:
+        self.axis = axis
+
+    def __call__(self, observation: np.ndarray) -> np.ndarray:
+        observation_raw = observation.copy()
+
+        numerator = (observation_raw - observation_raw.min(axis=self.axis))
+        denominator = np.maximum(
+            (observation_raw.max(axis=self.axis)-observation_raw.min(axis=self.axis)),
+            1.0e-12 * np.ones(observation_raw.shape[1])
+        )
+        observation_norm = numerator / denominator
+        # should not normalize the valid flag
+        observation[:, 0:-1] = observation_norm[:, 0:-1]
+        return observation
+
+class ToTensor(object):
 
     def __init__(self) -> None:
         pass
 
-    def __call__(self, observation: np.ndarray) -> np.ndarray:
-        return observation
+    def __call__(self, observation: np.ndarray) -> torch.Tensor:
+        return torch.from_numpy(observation)
