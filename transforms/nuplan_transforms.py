@@ -147,4 +147,4 @@ class ToTensor(object):
         pass
 
     def __call__(self, observation: np.ndarray) -> torch.Tensor:
-        return torch.from_numpy(observation)
+        return torch.from_numpy(observation).to(dtype=torch.get_default_dtype())
