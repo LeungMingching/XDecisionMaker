@@ -33,12 +33,12 @@ class NuPlanModel(BaseModel):
 		"""
 		# out: (length, batch size, d_model)
 		out = observation.permute(1, 0, 2)
-		print(out.dtype)
-		print(out.shape)
 		# The encoder layer expect features in the shape of (length, batch size, d_model).
 		out = self.encoder(out)
 		# out: (batch size, length, d_model)
 		out = out.transpose(0, 1)
+		# mean pooling
+		stats = out.mean(dim=1)
 		# out: (batch, n_spks)
-		out = self.pred_layer(out)
+		out = self.pred_layer(stats)
 		return out
