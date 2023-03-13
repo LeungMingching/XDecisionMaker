@@ -1,15 +1,20 @@
 {
     "name": "Mnist_LeNet",
-    "n_gpu": 1,
+    "n_gpu": 0,
 
     "arch": {
-        "type": "MnistModel",
+        "type": "NuPlanModel",
         "args": {}
     },
     "data_loader": {
-        "type": "MnistDataLoader",
+        "type": "NuPlanDataLoader",
         "args":{
-            "data_dir": "data/",
+            "data_root": "data/NuPlan/converted_dataset",
+            "scenario_list": [
+                "accelerating_at_crosswalk",
+                "near_pedestrian_at_pickup_dropoff",
+                "traversing_crosswalk"
+            ],
             "batch_size": 128,
             "shuffle": true,
             "validation_split": 0.1,
@@ -24,7 +29,7 @@
             "amsgrad": true
         }
     },
-    "loss": "nll_loss",
+    "loss": "mse_loss",
     "metrics": [
         "accuracy", "top_k_acc"
     ],
