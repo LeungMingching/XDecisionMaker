@@ -1,15 +1,18 @@
 import os
 import numpy as np
+from typing import Callable, List, Optional
 from torch.utils.data import Dataset
 
 class NuPlanDataset(Dataset):
     def __init__(self,
         data_root: str,
-        scenario_list: list[str],
-        transform: object = None
+        scenario_list: List[str],
+        transform: Optional[Callable] = None,
+        target_transform: Optional[Callable] = None
     ) -> None:
 
         self.transform = transform
+        self.target_transform = target_transform
         
         for idx in range(len(scenario_list)):
             observation_path = os.path.join(data_root, scenario_list[idx], 'observation_array.npy')
@@ -33,10 +36,15 @@ class NuPlanDataset(Dataset):
         return len(self.observation)
 
     def __getitem__(self, idx):
+        obs = self.observation[idx]
+        lap = self.look_ahead_pt[idx]
+        
         if self.transform:
-            return self.transform(self.observation[idx]), self.look_ahead_pt[idx]
-        else:
-            return self.observation[idx], self.look_ahead_pt[idx]
+            obs = self.transform(self.observation[idx])
+        if self.target_transform:
+            lap = self.target_transform(self.look_ahead_pt[idx])
+        
+        return obs, lap
     
 if __name__ == '__main__':
 

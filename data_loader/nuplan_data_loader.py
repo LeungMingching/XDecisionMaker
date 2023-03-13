@@ -13,5 +13,8 @@ class NuPlanDataLoader(BaseDataLoader):
             NormalizeByAxis(axis=0),
             ToTensor()
         ])
-        self.dataset = NuPlanDataset(data_root, scenario_list, transform=trsfm)
+        target_trsfm = Compose([
+            ToTensor()
+        ])
+        self.dataset = NuPlanDataset(data_root, scenario_list, transform=trsfm, target_transform=target_trsfm)
         super().__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
