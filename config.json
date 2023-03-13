@@ -1,5 +1,5 @@
 {
-    "name": "Mnist_LeNet",
+    "name": "NuPlan_EncoderNet",
     "n_gpu": 0,
 
     "arch": {
@@ -11,11 +11,9 @@
         "args":{
             "data_root": "data/NuPlan/converted_dataset",
             "scenario_list": [
-                "accelerating_at_crosswalk",
-                "near_pedestrian_at_pickup_dropoff",
-                "traversing_crosswalk"
+                "accelerating_at_crosswalk"
             ],
-            "batch_size": 128,
+            "batch_size": 10,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2
@@ -31,7 +29,7 @@
     },
     "loss": "mse_loss",
     "metrics": [
-        "accuracy", "top_k_acc"
+        "accuracy"
     ],
     "lr_scheduler": {
         "type": "StepLR",
